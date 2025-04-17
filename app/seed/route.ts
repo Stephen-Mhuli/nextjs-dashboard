@@ -56,7 +56,14 @@ async function seedInvoices() {
 }
 
 async function seedCustomers() {
-  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+  try {
+    await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+  } catch (err: any) {
+    if (err.code !== '23505') {
+      throw err; // only throw if it's not the "already exists" error
+    }
+  }
+  
 
   await sql`
     CREATE TABLE IF NOT EXISTS customers (
